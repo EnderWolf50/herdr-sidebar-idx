@@ -1,4 +1,4 @@
-# herdr-workspace-idx
+# herdr-sidebar-idx
 
 A [herdr](https://herdr.dev) plugin that writes numbers into the `$idx` sidebar
 token of workspaces and agents, so the sidebar can show the number you press to
@@ -12,14 +12,14 @@ herdr CLI and reports them with `report-metadata`.
 Requires Go (the plugin is built on install).
 
 ```
-herdr plugin install enderwolf50/herdr-workspace-idx
+herdr plugin install enderwolf50/herdr-sidebar-idx
 ```
 
 For local development, build and link the checkout:
 
 ```
-go build -o workspace-idx .      # workspace-idx.exe on Windows
-herdr plugin link /path/to/herdr-workspace-idx
+go build -o sidebar-idx .      # sidebar-idx.exe on Windows
+herdr plugin link /path/to/herdr-sidebar-idx
 ```
 
 ## Show the numbers
@@ -42,7 +42,7 @@ rows = [
 
 ## Settings
 
-`herdr plugin config-dir enderwolf50.workspace-idx` prints the plugin's config
+`herdr plugin config-dir enderwolf50.sidebar-idx` prints the plugin's config
 directory. It holds `config.toml`, created with defaults on first run:
 
 ```toml
@@ -54,7 +54,7 @@ Set either to `false` to hide those numbers; the plugin clears the token, so
 `$idx` disappears from the rows. Apply a change with:
 
 ```
-herdr plugin action invoke enderwolf50.workspace-idx.sync
+herdr plugin action invoke enderwolf50.sidebar-idx.sync
 ```
 
 Only `key = true|false` lines are read; `#` starts a comment.
@@ -73,7 +73,7 @@ Only `key = true|false` lines are read; `#` starts a comment.
 - **events**: `workspace.created/closed/moved/reordered`, `tab.created/closed`,
   `pane.created/closed/moved`, `pane.agent_detected`. Runs wait 500ms and only
   the newest run in a burst syncs.
-- **action**: `herdr plugin action invoke enderwolf50.workspace-idx.sync`.
+- **action**: `herdr plugin action invoke enderwolf50.sidebar-idx.sync`.
 
 ## Develop
 

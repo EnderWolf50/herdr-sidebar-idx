@@ -1,4 +1,4 @@
-// herdr-workspace-idx writes numbers into the $idx sidebar token of workspaces
+// herdr-sidebar-idx writes numbers into the $idx sidebar token of workspaces
 // and agent panes, so they can be shown with rows such as
 // [["$idx", "state_icon", "workspace"], ...] and matched to jump shortcuts.
 package main
@@ -43,8 +43,8 @@ type config struct {
 	AgentNumbers     bool
 }
 
-const defaultConfig = `# herdr-workspace-idx settings.
-# Run "herdr plugin action invoke enderwolf50.workspace-idx.sync" to apply changes.
+const defaultConfig = `# herdr-sidebar-idx settings.
+# Run "herdr plugin action invoke enderwolf50.sidebar-idx.sync" to apply changes.
 
 # Number workspaces in the sidebar ($idx in [ui.sidebar.spaces] rows).
 workspace_numbers = true
@@ -242,7 +242,7 @@ func main() {
 	}
 	cfg := loadConfig(envOr("HERDR_PLUGIN_CONFIG_DIR", stateDir))
 	if err := syncIdx(herdrRunner(envOr("HERDR_BIN_PATH", "herdr")), cfg); err != nil {
-		fmt.Fprintln(os.Stderr, "herdr-workspace-idx:", err)
+		fmt.Fprintln(os.Stderr, "herdr-sidebar-idx:", err)
 		os.Exit(1)
 	}
 }

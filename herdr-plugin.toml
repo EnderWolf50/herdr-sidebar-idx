@@ -1,63 +1,63 @@
-id = "enderwolf50.workspace-idx"
-name = "Workspace Index"
+id = "enderwolf50.sidebar-idx"
+name = "Sidebar Index"
 version = "0.3.0"
 min_herdr_version = "0.9.3"
 description = "Show workspace and agent numbers in the sidebar via the $idx token"
 platforms = ["linux", "macos", "windows"]
 
 [[build]]
-command = ["go", "build", "-o", "workspace-idx", "."]
+command = ["go", "build", "-o", "sidebar-idx", "."]
 platforms = ["linux", "macos"]
 
 [[build]]
-command = ["go", "build", "-o", "workspace-idx.exe", "."]
+command = ["go", "build", "-o", "sidebar-idx.exe", "."]
 platforms = ["windows"]
 
 [[startup]]
-command = ["./workspace-idx"]
+command = ["./sidebar-idx"]
 
 [[events]]
 on = "workspace.created"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "workspace.closed"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "workspace.moved"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "workspace.reordered"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "tab.created"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "tab.closed"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "pane.created"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "pane.closed"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "pane.moved"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[events]]
 on = "pane.agent_detected"
-command = ["./workspace-idx", "-delay", "500ms"]
+command = ["./sidebar-idx", "-delay", "500ms"]
 
 [[actions]]
 id = "sync"
-title = "Sync workspace numbers"
+title = "Sync sidebar numbers"
 contexts = ["workspace"]
-command = ["./workspace-idx"]
+command = ["./sidebar-idx"]
