@@ -1,0 +1,39 @@
+id = "enderwolf50.workspace-idx"
+name = "Workspace Index"
+version = "0.2.0"
+min_herdr_version = "0.9.3"
+description = "Show each workspace's number in the sidebar via the $idx token"
+platforms = ["linux", "macos", "windows"]
+
+[[build]]
+command = ["go", "build", "-o", "workspace-idx", "."]
+platforms = ["linux", "macos"]
+
+[[build]]
+command = ["go", "build", "-o", "workspace-idx.exe", "."]
+platforms = ["windows"]
+
+[[startup]]
+command = ["./workspace-idx"]
+
+[[events]]
+on = "workspace.created"
+command = ["./workspace-idx", "-delay", "500ms"]
+
+[[events]]
+on = "workspace.closed"
+command = ["./workspace-idx", "-delay", "500ms"]
+
+[[events]]
+on = "workspace.moved"
+command = ["./workspace-idx", "-delay", "500ms"]
+
+[[events]]
+on = "workspace.reordered"
+command = ["./workspace-idx", "-delay", "500ms"]
+
+[[actions]]
+id = "sync"
+title = "Sync workspace numbers"
+contexts = ["workspace"]
+command = ["./workspace-idx"]
