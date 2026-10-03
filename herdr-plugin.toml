@@ -1,6 +1,6 @@
 id = "enderwolf50.sidebar-idx"
 name = "Sidebar Index"
-version = "0.3.0"
+version = "0.3.1"
 min_herdr_version = "0.9.3"
 description = "Show workspace and agent numbers in the sidebar via the $idx token"
 platforms = ["linux", "macos", "windows"]

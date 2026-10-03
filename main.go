@@ -18,8 +18,12 @@ import (
 )
 
 type workspace struct {
-	ID     string `json:"workspace_id"`
-	Number int    `json:"number"`
+	ID       string `json:"workspace_id"`
+	Number   int    `json:"number"`
+	Worktree *struct {
+		RepoKey string `json:"repo_key"`
+		Linked  bool   `json:"is_linked_worktree"`
+	} `json:"worktree"`
 }
 
 type tab struct {
@@ -135,14 +139,51 @@ func (j job) args() []string {
 	return append(a, "--clear-token", "idx")
 }
 
-// agentOrder numbers agents 1..N in sidebar order: workspace, then tab, then
-// pane order. This matches the default "spaces" agent panel sort.
-func agentOrder(agents []agent, wsNum, tabNum map[string]int, paneIdx map[string]int) []agent {
+// sidebarRank returns each workspace's row position in the Spaces sidebar.
+// That is list order, except a worktree group sits together at its first
+// member's position, primary checkout first, so a worktree created later shows
+// above unrelated workspaces numbered before it.
+func sidebarRank(workspaces []workspace) map[string]int {
+	groupPos := map[string]int{}
+	for i, ws := range workspaces {
+		if t := ws.Worktree; t != nil {
+			if _, ok := groupPos[t.RepoKey]; !ok {
+				groupPos[t.RepoKey] = i
+			}
+		}
+	}
+	type row struct{ pos, linked, i int }
+	rows := make([]row, len(workspaces))
+	for i, ws := range workspaces {
+		rows[i] = row{i, 0, i}
+		if t := ws.Worktree; t != nil {
+			rows[i].pos = groupPos[t.RepoKey]
+			if t.Linked {
+				rows[i].linked = 1
+			}
+		}
+	}
+	sort.SliceStable(rows, func(a, b int) bool {
+		if rows[a].pos != rows[b].pos {
+			return rows[a].pos < rows[b].pos
+		}
+		return rows[a].linked < rows[b].linked
+	})
+	rank := map[string]int{}
+	for r, row := range rows {
+		rank[workspaces[row.i].ID] = r
+	}
+	return rank
+}
+
+// agentOrder numbers agents 1..N in sidebar order: workspace row, then tab,
+// then pane order. This matches the default "spaces" agent panel sort.
+func agentOrder(agents []agent, wsRank, tabNum map[string]int, paneIdx map[string]int) []agent {
 	sorted := append([]agent(nil), agents...)
 	sort.SliceStable(sorted, func(i, j int) bool {
 		a, b := sorted[i], sorted[j]
-		if wsNum[a.WorkspaceID] != wsNum[b.WorkspaceID] {
-			return wsNum[a.WorkspaceID] < wsNum[b.WorkspaceID]
+		if wsRank[a.WorkspaceID] != wsRank[b.WorkspaceID] {
+			return wsRank[a.WorkspaceID] < wsRank[b.WorkspaceID]
 		}
 		if tabNum[a.TabID] != tabNum[b.TabID] {
 			return tabNum[a.TabID] < tabNum[b.TabID]
@@ -177,10 +218,6 @@ func syncIdx(run runner, cfg config) error {
 	if err := list(run, "panes", &panes, "pane", "list"); err != nil {
 		return err
 	}
-	wsNum := map[string]int{}
-	for _, ws := range workspaces {
-		wsNum[ws.ID] = ws.Number
-	}
 	tabNum := map[string]int{}
 	for _, t := range tabs {
 		tabNum[t.ID] = t.Number
@@ -189,7 +226,7 @@ func syncIdx(run runner, cfg config) error {
 	for i, p := range panes {
 		paneIdx[p.ID] = i
 	}
-	for i, a := range agentOrder(agents, wsNum, tabNum, paneIdx) {
+	for i, a := range agentOrder(agents, sidebarRank(workspaces), tabNum, paneIdx) {
 		jobs = append(jobs, job{"pane", a.PaneID, i + 1, cfg.AgentNumbers})
 	}
 

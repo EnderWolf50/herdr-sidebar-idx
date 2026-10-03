@@ -62,7 +62,8 @@ Only `key = true|false` lines are read; `#` starts a comment.
 ## Numbering
 
 - **Workspaces**: herdr's own workspace number, the one `switch_workspace` uses.
-- **Agents**: 1..N in workspace, then tab, then pane order. This matches
+- **Agents**: 1..N top to bottom as the sidebar shows them: workspace row
+  (worktrees grouped under their repo's workspace), then tab, then pane. This matches
   the default `ui.agent_panel_sort = "spaces"`. With `"priority"`, herdr orders
   agents by attention and the numbers will not match the sidebar.
 

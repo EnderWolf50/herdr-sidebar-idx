@@ -182,3 +182,32 @@ func TestSettleWithoutDelayRunsImmediately(t *testing.T) {
 		t.Fatal("no delay must always proceed")
 	}
 }
+
+// Mirrors a real herdr 0.9.3 session: tmpWT is a worktree of tmpA created after
+// tmpB, so it has a later number but the sidebar shows it under tmpA.
+func TestAgentOrderFollowsWorktreeGroups(t *testing.T) {
+	var workspaces []workspace
+	run := func(args ...string) ([]byte, error) {
+		return []byte(`{"result":{"workspaces":[
+		  {"workspace_id":"wB","number":1},
+		  {"workspace_id":"wD","number":2,"worktree":{"repo_key":"A","is_linked_worktree":false}},
+		  {"workspace_id":"wE","number":3},
+		  {"workspace_id":"wF","number":4,"worktree":{"repo_key":"A","is_linked_worktree":true}}]}}`), nil
+	}
+	if err := list(run, "workspaces", &workspaces, "workspace", "list"); err != nil {
+		t.Fatal(err)
+	}
+	agents := []agent{
+		{PaneID: "wE:p1", WorkspaceID: "wE"},
+		{PaneID: "wF:p1", WorkspaceID: "wF"},
+		{PaneID: "wB:p1", WorkspaceID: "wB"},
+		{PaneID: "wD:p1", WorkspaceID: "wD"},
+	}
+	var got []string
+	for _, a := range agentOrder(agents, sidebarRank(workspaces), nil, nil) {
+		got = append(got, a.WorkspaceID)
+	}
+	if want := "wB wD wF wE"; strings.Join(got, " ") != want {
+		t.Fatalf("got %v, want %s", got, want)
+	}
+}
